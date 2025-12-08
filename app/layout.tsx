@@ -7,22 +7,18 @@ import {
   SignedOut,
   UserButton,
 } from '@clerk/nextjs'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Nunito } from 'next/font/google'
 import './globals.css'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const nunito = Nunito({
+  variable: '--font-nunito',
   subsets: ['latin'],
-})
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
 })
 
 export const metadata: Metadata = {
   title: 'Links Machine',
-  description: 'Links Machine is a platform for creating and managing your links',
+  description: 'Create your personal link hub. Share all your important links in one place.',
 }
 
 export default function RootLayout({
@@ -32,20 +28,35 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          <header className="flex justify-end items-center p-4 gap-4 h-16">
-            <SignedOut>
-              <SignInButton />
-              <SignUpButton>
-                <button className="bg-[#6c47ff] text-ceramic-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
-                  Sign Up
-                </button>
-              </SignUpButton>
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
+      <html lang="en" className="light">
+        <body className={`${nunito.variable} font-sans antialiased bg-white text-black`}>
+          <header className="flex justify-between items-center px-6 py-4 max-w-5xl mx-auto">
+            <a href="/" className="text-xl font-bold">
+              🔗 Links Machine
+            </a>
+            <nav className="flex items-center gap-3">
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <button className="text-[#6B7280] hover:text-black font-medium px-4 py-2 rounded-full transition-colors cursor-pointer">
+                    Log in
+                  </button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <button className="bg-[#FFDD00] hover:bg-[#f5d400] text-black font-semibold px-6 py-2.5 rounded-full transition-colors cursor-pointer">
+                    Sign up free
+                  </button>
+                </SignUpButton>
+              </SignedOut>
+              <SignedIn>
+                <UserButton 
+                  appearance={{
+                    elements: {
+                      avatarBox: "w-10 h-10"
+                    }
+                  }}
+                />
+              </SignedIn>
+            </nav>
           </header>
           {children}
         </body>
