@@ -1,65 +1,70 @@
-import Image from "next/image";
+import prisma from "../lib/prisma"
 
-export default function Home() {
+export default async function Home() {
+  let users: Array<{
+    id: number
+    email: string
+    name: string | null
+    createdAt: Date
+    updatedAt: Date
+  }> = []
+  let error = null
+
+  try {
+    users = await prisma.user.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    })
+  } catch (e) {
+    console.error("Error fetching users:", e)
+    error = "Failed to load users. Make sure your DATABASE_URL is configured."
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="min-h-screen bg-zinc-950 text-zinc-100 p-8">
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-3xl font-bold mb-8 text-emerald-400">
+          Users from Database
+        </h1>
+        {error ? (
+          <p className="text-red-400 bg-red-950/50 p-4 rounded-lg border border-red-800">
+            {error}
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+        ) : users.length === 0 ? (
+          <div className="text-zinc-400 bg-zinc-900 p-6 rounded-lg border border-zinc-800">
+            <p className="mb-4">No users yet.</p>
+            <p className="text-sm">
+              Create one using the API at{" "}
+              <code className="bg-zinc-800 px-2 py-1 rounded text-emerald-400">
+                /api/users
+              </code>
+            </p>
+            <pre className="mt-4 bg-zinc-800 p-4 rounded text-sm overflow-x-auto">
+{`curl -X POST http://localhost:3000/api/users \\
+  -H "Content-Type: application/json" \\
+  -d '{"email":"test@example.com","name":"Test User"}'`}
+            </pre>
+          </div>
+        ) : (
+          <ul className="space-y-4">
+            {users.map((user) => (
+              <li
+                key={user.id}
+                className="bg-zinc-900 border border-zinc-800 p-5 rounded-lg hover:border-emerald-800 transition-colors"
+              >
+                <p className="font-semibold text-lg text-zinc-100">
+                  {user.name || "No name"}
+                </p>
+                <p className="text-sm text-zinc-400">{user.email}</p>
+                <p className="text-xs text-zinc-600 mt-2">
+                  Created: {user.createdAt.toLocaleDateString()}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </main>
+  )
 }
