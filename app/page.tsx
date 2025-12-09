@@ -6,12 +6,11 @@ import { claimUsername, addLink, deleteLink } from "./actions"
 export default async function Home() {
   const user = await currentUser()
 
-  // State 1: Logged out - Show landing page
+  // State 1: Logged out - Show landing page (full screen hero)
   if (!user) {
     return (
-      <main className="min-h-[calc(100vh-80px)] bg-white">
-        {/* Hero Section */}
-        <section className="max-w-4xl mx-auto px-6 pt-16 pb-24 text-center">
+      <main className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6">
+        <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-black leading-tight mb-6">
             One link for all<br />your links
           </h1>
@@ -26,53 +25,7 @@ export default async function Home() {
           <p className="text-[#6B7280] text-sm mt-4">
             It&apos;s free and takes less than a minute ✨
           </p>
-        </section>
-
-        {/* Features Section */}
-        <section className="bg-[#F7F7F7] py-20">
-          <div className="max-w-5xl mx-auto px-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-center text-black mb-16">
-              Everything in one place
-            </h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="bg-white rounded-2xl p-8 border border-[#E5E5E5]">
-                <div className="text-4xl mb-4">🎯</div>
-                <h3 className="text-xl font-bold text-black mb-2">Simple & Clean</h3>
-                <p className="text-[#6B7280]">
-                  No clutter. Just your links, beautifully displayed.
-                </p>
-              </div>
-              <div className="bg-white rounded-2xl p-8 border border-[#E5E5E5]">
-                <div className="text-4xl mb-4">⚡</div>
-                <h3 className="text-xl font-bold text-black mb-2">Fast Setup</h3>
-                <p className="text-[#6B7280]">
-                  Create your page in under a minute. No coding required.
-                </p>
-              </div>
-              <div className="bg-white rounded-2xl p-8 border border-[#E5E5E5]">
-                <div className="text-4xl mb-4">📱</div>
-                <h3 className="text-xl font-bold text-black mb-2">Mobile Ready</h3>
-                <p className="text-[#6B7280]">
-                  Looks great on any device, anywhere, anytime.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="py-20 px-6">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-black mb-6">
-              Ready to simplify your links?
-            </h2>
-            <SignUpButton mode="modal">
-              <button className="bg-[#FFDD00] hover:bg-[#f5d400] text-black font-semibold text-lg px-8 py-4 rounded-full transition-colors cursor-pointer shadow-sm">
-                Get started — it&apos;s free
-              </button>
-            </SignUpButton>
-          </div>
-        </section>
+        </div>
       </main>
     )
   }
@@ -83,7 +36,7 @@ export default async function Home() {
     include: { links: true },
   })
 
-  // State 2: Logged in but no DB profile - Show claim username form
+  // State 2: Logged in but no DB profile - solid white background
   if (!dbUser) {
     return (
       <main className="min-h-[calc(100vh-80px)] bg-white flex items-center justify-center px-6">
@@ -137,9 +90,9 @@ export default async function Home() {
     )
   }
 
-  // State 3: Has DB profile - Show dashboard
+  // State 3: Has DB profile - solid gray background
   return (
-    <main className="min-h-[calc(100vh-80px)] bg-[#F7F7F7]">
+    <main className="min-h-[calc(100vh-80px)]">
       <div className="max-w-3xl mx-auto px-6 py-12">
         {/* Welcome Header */}
         <div className="bg-white rounded-2xl p-8 border border-[#E5E5E5] mb-6">
@@ -149,7 +102,7 @@ export default async function Home() {
             </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-black">
-                Hey, {dbUser.name || dbUser.username}! 👋
+                Hey, {dbUser.name || dbUser.username}! ��
               </h1>
               <p className="text-[#6B7280]">
                 linksmachine.com/<span className="font-medium text-black">{dbUser.username}</span>
