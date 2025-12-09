@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation"
 import prisma from "../../lib/prisma"
+import { CopyButton } from "../components/copy-button"
 
 type Props = {
   params: Promise<{ username: string }>
@@ -17,6 +18,8 @@ export default async function ProfilePage({ params }: Props) {
     notFound()
   }
 
+  const profileUrl = `${process.env.NEXT_PUBLIC_APP_URL || "https://linksmachine.com"}/${user.username}`
+
   return (
     <main className="min-h-screen bg-[#F7F7F7] py-12 px-6">
       <div className="max-w-lg mx-auto">
@@ -31,6 +34,10 @@ export default async function ProfilePage({ params }: Props) {
           {user.name && (
             <p className="text-[#6B7280]">@{user.username}</p>
           )}
+          {/* Copy Button */}
+          <div className="mt-3">
+            <CopyButton url={profileUrl} />
+          </div>
         </div>
 
         {/* Links */}
