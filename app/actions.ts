@@ -2,6 +2,7 @@
 
 import { currentUser } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
+import { revalidatePath } from "next/cache"
 import prisma from "../lib/prisma"
 
 export async function claimUsername(formData: FormData) {
@@ -42,5 +43,72 @@ export async function claimUsername(formData: FormData) {
   })
 
   redirect("/")
+}
+
+export async function addLink(formData: FormData) {
+  const user = await currentUser()
+
+  if (!user) {
+    throw new Error("You must be signed in")
+  }
+
+  const title = formData.get("title") as string
+  const url = formData.get("url") as string
+
+  if (!title || !url) {
+    throw new Error("Title and URL are required")
+  }
+
+  // Find the user in our database
+  const dbUser = await prisma.user.findUnique({
+    where: { clerkId: user.id },
+  })
+
+  if (!dbUser) {
+    throw new Error("User not found")
+  }
+
+  await prisma.link.create({
+    data: {
+      title,
+      url,
+      userId: dbUser.id,
+    },
+  })
+
+  revalidatePath("/")
+}
+
+export async function deleteLink(formData: FormData) {
+  const user = await currentUser()
+
+  if (!user) {
+    throw new Error("You must be signed in")
+  }
+
+  const linkId = formData.get("linkId") as string
+
+  if (!linkId) {
+    throw new Error("Link ID is required")
+  }
+
+  // Find the user in our database
+  const dbUser = await prisma.user.findUnique({
+    where: { clerkId: user.id },
+  })
+
+  if (!dbUser) {
+    throw new Error("User not found")
+  }
+
+  // Delete the link (only if it belongs to the user)
+  await prisma.link.deleteMany({
+    where: {
+      id: parseInt(linkId),
+      userId: dbUser.id,
+    },
+  })
+
+  revalidatePath("/")
 }
 

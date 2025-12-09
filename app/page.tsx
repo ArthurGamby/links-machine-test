@@ -1,7 +1,7 @@
 import { currentUser } from "@clerk/nextjs/server"
 import { SignUpButton } from "@clerk/nextjs"
 import prisma from "../lib/prisma"
-import { claimUsername } from "./actions"
+import { claimUsername, addLink, deleteLink } from "./actions"
 
 export default async function Home() {
   const user = await currentUser()
@@ -166,33 +166,61 @@ export default async function Home() {
 
         {/* Links Section */}
         <div className="bg-white rounded-2xl p-8 border border-[#E5E5E5] mb-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-black">My Links</h2>
-            <button className="bg-[#FFDD00] hover:bg-[#f5d400] text-black font-semibold px-5 py-2.5 rounded-full transition-colors cursor-pointer text-sm">
-              + Add link
-            </button>
-          </div>
+          <h2 className="text-xl font-bold text-black mb-6">My Links</h2>
           
+          {/* Add Link Form */}
+          <form action={addLink} className="mb-6">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="text"
+                name="title"
+                placeholder="Title"
+                required
+                className="flex-1 bg-[#F7F7F7] border border-[#E5E5E5] rounded-xl px-4 py-3 text-black placeholder-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#FFDD00] focus:border-transparent"
+              />
+              <input
+                type="url"
+                name="url"
+                placeholder="https://example.com"
+                required
+                className="flex-1 bg-[#F7F7F7] border border-[#E5E5E5] rounded-xl px-4 py-3 text-black placeholder-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#FFDD00] focus:border-transparent"
+              />
+              <button
+                type="submit"
+                className="bg-[#FFDD00] hover:bg-[#f5d400] text-black font-semibold px-6 py-3 rounded-full transition-colors cursor-pointer whitespace-nowrap"
+              >
+                + Add
+              </button>
+            </div>
+          </form>
+          
+          {/* Links List */}
           {dbUser.links.length === 0 ? (
             <div className="text-center py-12 bg-[#F7F7F7] rounded-xl">
               <div className="text-4xl mb-3">🔗</div>
               <p className="text-[#6B7280] mb-1">No links yet</p>
-              <p className="text-[#9CA3AF] text-sm">Add your first link to get started!</p>
+              <p className="text-[#9CA3AF] text-sm">Add your first link above!</p>
             </div>
           ) : (
             <ul className="space-y-3">
               {dbUser.links.map((link) => (
                 <li
                   key={link.id}
-                  className="bg-[#F7F7F7] border border-[#E5E5E5] p-5 rounded-xl flex items-center justify-between group hover:border-[#FFDD00] transition-colors"
+                  className="bg-[#F7F7F7] border border-[#E5E5E5] p-4 rounded-xl flex items-center justify-between group hover:border-[#FFDD00] transition-colors"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="font-semibold text-black truncate">{link.title}</p>
                     <p className="text-sm text-[#6B7280] truncate">{link.url}</p>
                   </div>
-                  <button className="text-[#6B7280] hover:text-black ml-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    ✏️
-                  </button>
+                  <form action={deleteLink} className="ml-4">
+                    <input type="hidden" name="linkId" value={link.id} />
+                    <button
+                      type="submit"
+                      className="text-[#9CA3AF] hover:text-red-500 transition-colors cursor-pointer p-2"
+                    >
+                      🗑️
+                    </button>
+                  </form>
                 </li>
               ))}
             </ul>
