@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation"
+import { clerkClient } from "@clerk/nextjs/server"
 import prisma from "../../lib/prisma"
 import { CopyButton } from "../components/copy-button"
 
@@ -18,6 +19,10 @@ export default async function ProfilePage({ params }: Props) {
     notFound()
   }
 
+  // Fetch Clerk user to get profile image
+  const client = await clerkClient()
+  const clerkUser = await client.users.getUser(user.clerkId)
+
   const profileUrl = `${process.env.NEXT_PUBLIC_APP_URL || "https://linksmachine.com"}/${user.username}`
 
   return (
@@ -26,9 +31,17 @@ export default async function ProfilePage({ params }: Props) {
         {/* Profile Card */}
         <div className="card text-center">
           {/* Avatar */}
-          <div className="w-24 h-24 bg-[#FFDD00] rounded-full flex items-center justify-center text-4xl font-bold mx-auto mb-4">
-            {(user.name || user.username).charAt(0).toUpperCase()}
-          </div>
+          {clerkUser.imageUrl ? (
+            <img
+              src={clerkUser.imageUrl}
+              alt={user.username}
+              className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+            />
+          ) : (
+            <div className="w-24 h-24 bg-[#FFDD00] rounded-full flex items-center justify-center text-4xl font-bold mx-auto mb-4">
+              {(user.name || user.username).charAt(0).toUpperCase()}
+            </div>
+          )}
           
           {/* Name & Username */}
           <h1 className="text-2xl font-bold text-black">
