@@ -1,5 +1,6 @@
 import { currentUser } from "@clerk/nextjs/server"
 import { SignUpButton } from "@clerk/nextjs"
+import { ExternalLink, Trash2, Link } from "lucide-react"
 import prisma from "../lib/prisma"
 import { claimUsername, addLink, deleteLink } from "./actions"
 
@@ -9,13 +10,8 @@ export default async function Home() {
   // State 1: Logged out - Show landing page (full screen hero)
   if (!user) {
     return (
-      <main className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6 relative">
-        {/* Subtle radial glow behind content */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-[600px] h-[600px] bg-white/50 rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="relative max-w-2xl mx-auto text-center">
+      <main className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6">
+        <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-black leading-tight mb-6">
             One link for all<br />your links
           </h1>
@@ -41,10 +37,10 @@ export default async function Home() {
     include: { links: true },
   })
 
-  // State 2: Logged in but no DB profile - claim username
+  // State 2: Logged in but no DB profile - solid white background
   if (!dbUser) {
     return (
-      <main className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6">
+      <main className="min-h-[calc(100vh-80px)] bg-white flex items-center justify-center px-6">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <div className="text-5xl mb-4">👋</div>
@@ -56,7 +52,7 @@ export default async function Home() {
             </p>
           </div>
           
-          <div className="card">
+          <div className="bg-[#F7F7F7] rounded-2xl p-8 border border-[#E5E5E5]">
             <form action={claimUsername}>
               <label
                 htmlFor="username"
@@ -95,12 +91,12 @@ export default async function Home() {
     )
   }
 
-  // State 3: Has DB profile - dashboard
+  // State 3: Has DB profile - solid gray background
   return (
     <main className="min-h-[calc(100vh-80px)]">
       <div className="max-w-3xl mx-auto px-6 py-12">
         {/* Welcome Header */}
-        <div className="card mb-6">
+        <div className="bg-white rounded-2xl p-8 border border-[#E5E5E5] mb-6">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-16 h-16 bg-[#FFDD00] rounded-full flex items-center justify-center text-2xl font-bold">
               {(dbUser.name || dbUser.username).charAt(0).toUpperCase()}
@@ -118,12 +114,12 @@ export default async function Home() {
             href={`/${dbUser.username}`}
             className="inline-flex items-center gap-2 bg-[#F7F7F7] hover:bg-[#E5E5E5] text-black font-medium px-5 py-2.5 rounded-full transition-colors text-sm"
           >
-            View my page →
+            View my page <ExternalLink size={16} />
           </a>
         </div>
 
         {/* Links Section */}
-        <div className="card mb-6">
+        <div className="bg-white rounded-2xl p-8 border border-[#E5E5E5] mb-6">
           <h2 className="text-xl font-bold text-black mb-6">My Links</h2>
           
           {/* Add Link Form */}
@@ -155,7 +151,7 @@ export default async function Home() {
           {/* Links List */}
           {dbUser.links.length === 0 ? (
             <div className="text-center py-12 bg-[#F7F7F7] rounded-xl">
-              <div className="text-4xl mb-3">🔗</div>
+              <Link size={40} className="mx-auto mb-3 text-[#9CA3AF]" />
               <p className="text-[#6B7280] mb-1">No links yet</p>
               <p className="text-[#9CA3AF] text-sm">Add your first link above!</p>
             </div>
@@ -176,7 +172,7 @@ export default async function Home() {
                       type="submit"
                       className="text-[#9CA3AF] hover:text-red-500 transition-colors cursor-pointer p-2"
                     >
-                      🗑️
+                      <Trash2 size={18} />
                     </button>
                   </form>
                 </li>
@@ -186,7 +182,7 @@ export default async function Home() {
         </div>
 
         {/* Profile Info */}
-        <div className="card">
+        <div className="bg-white rounded-2xl p-8 border border-[#E5E5E5]">
           <h2 className="text-xl font-bold text-black mb-6">Profile</h2>
           <dl className="space-y-4">
             <div className="flex items-center justify-between py-3 border-b border-[#E5E5E5]">
